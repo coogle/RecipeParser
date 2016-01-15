@@ -2,17 +2,12 @@
 
 class RecipeParser_Parser_Hungrycouplenyccom {
     
-    static public function parse($html, $url) {
-        $recipe = RecipeParser_Parser_Microformat::parse($html, $url);
-
-        libxml_use_internal_errors(true);
-        $html = mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8");
-        $doc = new DOMDocument();
-        $doc->loadHTML('<?xml encoding="UTF-8">' . $html);
+    static public function parse(DOMDocument $doc, $url) {
+        $recipe = RecipeParser_Parser_Microformat::parse($doc, $url);
         $xpath = new DOMXPath($doc);
         
         // Title
-        $nodes = $xpath->query('.//*[@itemprop="name"]', $microdata);
+        $nodes = $xpath->query('.//*[@itemprop="name"]');
         if ($nodes->length) {
             $value = $nodes->item(0)->nodeValue;
             $value = RecipeParser_Text::formatTitle($value);
