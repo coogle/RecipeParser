@@ -94,7 +94,7 @@ class MicrodataSchema {
                     continue;
                 }
 
-                if (RecipeParser_Text::matchSectionName($value)) {
+                if (\RecipeParser\Text::matchSectionName($value)) {
                     $value = \RecipeParser\Text::formatSectionName($value);
                     $recipe->addIngredientsSection($value);
                 } else {

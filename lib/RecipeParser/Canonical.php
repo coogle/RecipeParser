@@ -25,7 +25,7 @@ class Canonical {
             $nodes = $xpath->query('//*[@class="backtorecipe"]//a');
             if ($nodes->length) {
                 $href = $nodes->item(0)->getAttribute("href");
-                $url = RecipeParser_Text::relativeToAbsolute($href, $url);
+                $url = \RecipeParser\Text::relativeToAbsolute($href, $url);
                 return $url;
             }
         }

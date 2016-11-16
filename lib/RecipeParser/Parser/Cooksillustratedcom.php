@@ -20,7 +20,7 @@ class Cooksillustratedcom {
         $nodes = $xpath->query('//h4[@class="detailHeader"]');
         if ($nodes->length) {
             $line = trim($nodes->item(0)->nodeValue);
-            $recipe->yield = RecipeParser_Text::formatYield($line);
+            $recipe->yield = \RecipeParser\Text::formatYield($line);
         }
 
         // Notes
