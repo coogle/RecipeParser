@@ -1,10 +1,12 @@
 <?php
 
-class RecipeParser_Parser_Foodandwinecom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
-        $recipe = new RecipeParser_Recipe();
-        $xpath = new DOMXPath($doc);
+class Foodandwinecom {
+
+    static public function parse(\DOMDocument $doc, $url) {
+        $recipe = new \RecipeParser\Recipe();
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR FOODANDWINE.COM
 
@@ -20,7 +22,7 @@ class RecipeParser_Parser_Foodandwinecom {
         $nodes = $xpath->query('//time[@itemprop="prepTime"]');
         if ($nodes->length) {
             if ($value = $nodes->item(0)->textContent) {
-                $value = RecipeParser_Text::mixedTimeToMinutes($value);
+                $value = \RecipeParser\Text::mixedTimeToMinutes($value);
                 $recipe->time['total'] = $value;
             }
         }
@@ -28,7 +30,7 @@ class RecipeParser_Parser_Foodandwinecom {
         $nodes = $xpath->query('//*[@itemprop="recipeYield"]');
         if ($nodes->length) {
             $value = $nodes->item(0)->nodeValue;
-            $recipe->yield = RecipeParser_Text::formatYield($value);
+            $recipe->yield = \RecipeParser\Text::formatYield($value);
         }
 
         // Ingredients
@@ -45,11 +47,11 @@ class RecipeParser_Parser_Foodandwinecom {
         $nodes = $xpath->query('//span[@class = "steps-list__item__text"]');
         foreach ($nodes as $node) {
             $value = trim($node->nodeValue);
-            $value = RecipeParser_Text::stripLeadingNumbers($value);
+            $value = \RecipeParser\Text::stripLeadingNumbers($value);
             
             $parts = self::splitDirections($value);
             if ($parts['section']) {
-                $parts['section'] = RecipeParser_Text::formatSectionName($parts['section']);
+                $parts['section'] = \RecipeParser\Text::formatSectionName($parts['section']);
                 $recipe->addInstructionsSection($parts['section']);
             }
             $recipe->appendInstruction($parts['direction']);
@@ -73,7 +75,7 @@ class RecipeParser_Parser_Foodandwinecom {
             if (strpos($photo_url, 'default-recipe-image.gif') === false
                 && strpos($photo_url, 'placeholder.gif') === false)
             {
-                $recipe->photo_url = RecipeParser_Text::relativeToAbsolute($photo_url, $url);
+                $recipe->photo_url = \RecipeParser\Text::relativeToAbsolute($photo_url, $url);
             }
         }
 

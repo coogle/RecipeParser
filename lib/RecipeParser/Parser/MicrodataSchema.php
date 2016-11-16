@@ -1,10 +1,12 @@
 <?php
 
-class RecipeParser_Parser_MicrodataSchema {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
-        $recipe = new RecipeParser_Recipe();
-        $xpath = new DOMXPath($doc);
+class MicrodataSchema {
+
+    static public function parse(\DOMDocument $doc, $url) {
+        $recipe = new \RecipeParser\Recipe();
+        $xpath = new \DOMXPath($doc);
 
         $microdata = null;
         $nodes = $xpath->query('//*[contains(@itemtype, "//schema.org/Recipe") or contains(@itemtype, "//schema.org/recipe")]');
@@ -24,7 +26,7 @@ class RecipeParser_Parser_MicrodataSchema {
                     $line = $nodes->item(0)->nodeValue;
                 }
                 $value = trim($line);
-                $recipe->title = RecipeParser_Text::formatTitle($value);
+                $recipe->title = \RecipeParser\Text::formatTitle($value);
             }
 
             // Summary
@@ -35,7 +37,7 @@ class RecipeParser_Parser_MicrodataSchema {
                 } else {
                     $line = $nodes->item(0)->nodeValue;
                 }
-                $value = RecipeParser_Text::formatAsParagraphs($line);
+                $value = \RecipeParser\Text::formatAsParagraphs($line);
                 $recipe->description = $value;
             }
 
@@ -48,12 +50,12 @@ class RecipeParser_Parser_MicrodataSchema {
                 if ($nodes->length) {
                     if (strlen($nodes->item(0)->getAttribute('content')) >= 2) { #bug in bonappetit where content is only "P"
                         $value = $nodes->item(0)->getAttribute('content');
-                        $value = RecipeParser_Text::iso8601ToMinutes($value);
+                        $value = \RecipeParser\Text::iso8601ToMinutes($value);
                     } else if ($value = $nodes->item(0)->getAttribute('datetime')) {
-                        $value = RecipeParser_Text::iso8601ToMinutes($value);
+                        $value = \RecipeParser\Text::iso8601ToMinutes($value);
                     } else {
                         $value = trim($nodes->item(0)->nodeValue);
-                        $value = RecipeParser_Times::toMinutes($value);
+                        $value = \RecipeParser\Times::toMinutes($value);
                     }
                     if ($value) {
                         $recipe->time[$time_key] = $value;
@@ -72,7 +74,7 @@ class RecipeParser_Parser_MicrodataSchema {
                 } else {
                     $line = $nodes->item(0)->nodeValue;
                 }
-                $recipe->yield = RecipeParser_Text::formatYield($line);
+                $recipe->yield = \RecipeParser\Text::formatYield($line);
             }
 
             // Ingredients 
@@ -83,7 +85,7 @@ class RecipeParser_Parser_MicrodataSchema {
                 } else {
                     $line = $node->nodeValue;
                 }
-                $value = RecipeParser_Text::formatAsOneLine($line);
+                $value = \RecipeParser\Text::formatAsOneLine($line);
                 if (empty($value)) {
                     continue;
                 }
@@ -93,7 +95,7 @@ class RecipeParser_Parser_MicrodataSchema {
                 }
 
                 if (RecipeParser_Text::matchSectionName($value)) {
-                    $value = RecipeParser_Text::formatSectionName($value);
+                    $value = \RecipeParser\Text::formatSectionName($value);
                     $recipe->addIngredientsSection($value);
                 } else {
                     $recipe->appendIngredient($value);
@@ -107,7 +109,7 @@ class RecipeParser_Parser_MicrodataSchema {
             if (!$found) {
                 $nodes = $xpath->query('.//*[@itemprop="recipeInstructions"]//li', $microdata);
                 if ($nodes->length) {
-                    RecipeParser_Text::parseInstructionsFromNodes($nodes, $recipe);
+                    \RecipeParser\Text::parseInstructionsFromNodes($nodes, $recipe);
                     $found = true;
                 }
             }
@@ -116,7 +118,7 @@ class RecipeParser_Parser_MicrodataSchema {
             if (!$found) {
                 $nodes = $xpath->query('.//*[@itemprop="recipeInstructions"]/*', $microdata);
                 if ($nodes->length) {
-                    RecipeParser_Text::parseInstructionsFromNodes($nodes, $recipe);
+                    \RecipeParser\Text::parseInstructionsFromNodes($nodes, $recipe);
                     $found = true;
 
                     // Recipe.com gets caught up in here, but doesn't have well-formed nodes wrapping each ingredient.
@@ -127,7 +129,7 @@ class RecipeParser_Parser_MicrodataSchema {
             if (!$found) {
                 $nodes = $xpath->query('.//*[@itemprop="recipeInstructions"]//*[contains(concat(" ", normalize-space(@class), " "), " instruction ")]', $microdata);
                 if ($nodes->length) {
-                    RecipeParser_Text::parseInstructionsFromNodes($nodes, $recipe);
+                    \RecipeParser\Text::parseInstructionsFromNodes($nodes, $recipe);
                     $found = true;
                 }
             }
@@ -137,12 +139,12 @@ class RecipeParser_Parser_MicrodataSchema {
                 $nodes = $xpath->query('.//*[@itemprop="recipeInstructions"]', $microdata);
                 if ($nodes->length > 1) {
                     // Multiple nodes
-                    RecipeParser_Text::parseInstructionsFromNodes($nodes, $recipe);
+                    \RecipeParser\Text::parseInstructionsFromNodes($nodes, $recipe);
                     $found = true;
                 } else if ($nodes->length == 1) {
                     // Blob
                     $str = $nodes->item(0)->nodeValue;
-                    RecipeParser_Text::parseInstructionsFromBlob($str, $recipe);
+                    \RecipeParser\Text::parseInstructionsFromBlob($str, $recipe);
                     $found = true;
                 }
             }
@@ -170,7 +172,7 @@ class RecipeParser_Parser_MicrodataSchema {
                 }
             }
             if ($photo_url) {
-                $recipe->photo_url = RecipeParser_Text::relativeToAbsolute($photo_url, $url);
+                $recipe->photo_url = \RecipeParser\Text::relativeToAbsolute($photo_url, $url);
             }
 
             // Credits
@@ -184,7 +186,7 @@ class RecipeParser_Parser_MicrodataSchema {
                 $line = $nodes->item(0)->nodeValue;
             }
 
-            $recipe->credits = RecipeParser_Text::formatCredits($line);
+            $recipe->credits = \RecipeParser\Text::formatCredits($line);
         }
 
         return $recipe;

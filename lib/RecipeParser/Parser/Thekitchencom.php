@@ -1,17 +1,19 @@
 <?php
 
-class RecipeParser_Parser_Thekitchencom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
-        $recipe = new RecipeParser_Recipe();
-        $xpath = new DOMXPath($doc);
+class Thekitchencom {
+
+    static public function parse(\DOMDocument $doc, $url) {
+        $recipe = new \RecipeParser\Recipe();
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR THEKITCHEN.COM
 
         // Title
         $nodes = $xpath->query('//*[@id="recipe"]/h3');
         if ($nodes->length) {
-            $line = RecipeParser_Text::formatTitle($nodes->item(0)->nodeValue);
+            $line = \RecipeParser\Text::formatTitle($nodes->item(0)->nodeValue);
             $recipe->title = $line;
         }
 
@@ -32,7 +34,7 @@ class RecipeParser_Parser_Thekitchencom {
             if (strpos($line, "Serves")) {
                 if (preg_match("/.*(Serves.+)$/m", $line, $m)) {
                     $line = $m[1];
-                    $recipe->yield = RecipeParser_Text::formatYield($line);
+                    $recipe->yield = \RecipeParser\Text::formatYield($line);
                     continue;
                 }
             }
@@ -66,7 +68,7 @@ class RecipeParser_Parser_Thekitchencom {
             }
 
         }
-        RecipeParser_Text::parseIngredientsAndInstructionsFromBlob($blob, $recipe);
+        \RecipeParser\Text::parseIngredientsAndInstructionsFromBlob($blob, $recipe);
 
         // Photo
         $nodes = $xpath->query('//meta[@property="og:image"]');

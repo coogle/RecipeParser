@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Food52com {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Food52com {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataSchema::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataSchema::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR FOOD52.COM
 
@@ -41,7 +43,7 @@ class RecipeParser_Parser_Food52com {
             }
         }
         $line = preg_replace("/^Author Notes:\s*/", "", $line);
-        $recipe->notes = RecipeParser_Text::formatAsParagraphs($line);
+        $recipe->notes = \RecipeParser\Text::formatAsParagraphs($line);
 
         return $recipe;
     }

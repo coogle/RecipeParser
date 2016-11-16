@@ -1,0 +1,12 @@
+{
+	"name" : "coogle/recipe-parser",
+	"require" : {
+		"php" : ">=5.6",
+		"ext-curl" : "*"
+	},
+	"autoload" : {
+		"psr-0" : {
+			"RecipeParser" : "lib"
+		}
+	}
+}

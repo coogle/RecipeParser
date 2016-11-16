@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Allrecipescom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Allrecipescom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataSchema::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataSchema::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR ALLRECIPES.COM
 
@@ -18,7 +20,7 @@ class RecipeParser_Parser_Allrecipescom {
         if (!$recipe->title) {
             $node_list = $xpath->query('//h1[@itemprop="name"]');
             if ($node_list->length) {
-                $value = RecipeParser_Text::formatTitle($node_list->item(0)->nodeValue);
+                $value = \RecipeParser\Text::formatTitle($node_list->item(0)->nodeValue);
                 $recipe->title = $value;
             }
         }
@@ -39,9 +41,9 @@ class RecipeParser_Parser_Allrecipescom {
         foreach ($searches as $id_name => $time_key) {
             $nodes = $xpath->query('.//*[@id="' . $id_name . '"]');
             if ($nodes->length) {
-                $value = RecipeParser_Text::formatAsOneLine($nodes->item(0)->nodeValue);
+                $value = \RecipeParser\Text::formatAsOneLine($nodes->item(0)->nodeValue);
                 $value = trim(preg_replace("/(COOK|PREP|READY IN)/", "", $value));
-                $value = RecipeParser_Times::toMinutes($value);
+                $value = \RecipeParser\Times::toMinutes($value);
                 if ($value) {
                     $recipe->time[$time_key] = $value;
                 }
@@ -65,7 +67,7 @@ class RecipeParser_Parser_Allrecipescom {
         if (!count($recipe->instructions[0]["list"])) {
             $nodes = $xpath->query('//div[@class="directions"]//ol/li');
             foreach ($nodes as $node) {
-                $line = RecipeParser_Text::formatAsOneLine($node->nodeValue);
+                $line = \RecipeParser\Text::formatAsOneLine($node->nodeValue);
                 if (preg_match("/^(.+):$/", $line, $m)) {
                     $recipe->addInstructionsSection(ucfirst(strtolower($m[1])));
                 } else if ($line) {

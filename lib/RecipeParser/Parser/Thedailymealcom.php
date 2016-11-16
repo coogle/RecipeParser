@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Thedailymealcom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Thedailymealcom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataDataVocabulary::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataDataVocabulary::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR THEDAILYMEAL.COM
 
@@ -17,12 +19,12 @@ class RecipeParser_Parser_Thedailymealcom {
         if (!empty($recipe->ingredients)) {
             $nodes = $xpath->query("//div[@class='content']/div[@class='ingredient']/ul/li");  
             foreach ($nodes as $node) {
-                $value = RecipeParser_Text::formatAsOneLine($node->nodeValue);
+                $value = \RecipeParser\Text::formatAsOneLine($node->nodeValue);
                 if (empty($value)) {
                     continue;
                 }
-                if (RecipeParser_Text::matchSectionName($value)) {
-                    $value = RecipeParser_Text::formatSectionName($value);
+                if (\RecipeParser\Text::matchSectionName($value)) {
+                    $value = \RecipeParser\Text::formatSectionName($value);
                     $recipe->addIngredientsSection($value);
                 } else {
                     $recipe->appendIngredient($value);
@@ -36,7 +38,7 @@ class RecipeParser_Parser_Thedailymealcom {
         if (!$recipe->yield) {
             $nodes = $xpath->query("//table[@class='edamam-data']/tr[2]/td[2]");
             if ($nodes->length) {
-                $recipe->yield = RecipeParser_Text::formatYield($nodes->item(0)->nodeValue);
+                $recipe->yield = \RecipeParser\Text::formatYield($nodes->item(0)->nodeValue);
             }
         }
 

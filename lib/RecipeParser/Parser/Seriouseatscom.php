@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Seriouseatscom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Seriouseatscom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microformat stuff we can find.
-        $recipe = RecipeParser_Parser_Microformat::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\Microformat::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR SERIOUSEATS.COM
 
@@ -17,28 +19,28 @@ class RecipeParser_Parser_Seriouseatscom {
             $nodes = $xpath->query('.//h1', $hrecipe);
             if ($nodes->length) {
                 $value = $nodes->item(0)->nodeValue;
-                $recipe->title = RecipeParser_Text::formatTitle($value);
+                $recipe->title = \RecipeParser\Text::formatTitle($value);
             }
 
             // Yield -- Class names are conflated
             $nodes = $xpath->query('.//*[@class="info yield"]', $hrecipe);
             if ($nodes->length) {
                 $line = $nodes->item(0)->nodeValue;
-                $recipe->yield = RecipeParser_Text::formatYield($line);
+                $recipe->yield = \RecipeParser\Text::formatYield($line);
             }
 
             // Prep Times -- Class names are conflated
             $nodes = $xpath->query('.//*[@class="info preptime"]', $hrecipe);
             if ($nodes->length) {
                 $value = $nodes->item(0)->nodeValue;
-                $recipe->time['prep'] = RecipeParser_Times::toMinutes($value);
+                $recipe->time['prep'] = \RecipeParser\Times::toMinutes($value);
             }
 
             // Total Time / Duration -- Class names are conflated
             $nodes = $xpath->query('.//*[@class="info duration"]', $hrecipe);
             if ($nodes->length) {
                 $value = $nodes->item(0)->nodeValue;
-                $recipe->time['total'] = RecipeParser_Times::toMinutes($value);
+                $recipe->time['total'] = \RecipeParser\Times::toMinutes($value);
             }
         }
 
@@ -47,7 +49,7 @@ class RecipeParser_Parser_Seriouseatscom {
         if ($nodes->length) {
             $photo_url = $nodes->item(0)->getAttribute('src');
             if ($photo_url) {
-                $recipe->photo_url = RecipeParser_Text::relativeToAbsolute($photo_url, $url);
+                $recipe->photo_url = \RecipeParser\Text::relativeToAbsolute($photo_url, $url);
             }
         }
 

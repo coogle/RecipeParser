@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Sparkpeoplecom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Sparkpeoplecom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataSchema::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataSchema::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR SPARKPEOPLE.COM
 
@@ -14,7 +16,7 @@ class RecipeParser_Parser_Sparkpeoplecom {
         foreach ($nodes as $node) {
             $line = $node->nodeValue;
             if (preg_match("/Number of Servings: (\d+)/", $line, $m)) {
-                $recipe->yield = RecipeParser_Text::formatYield($m[1]);
+                $recipe->yield = \RecipeParser\Text::formatYield($m[1]);
             }
         }
 
@@ -45,12 +47,12 @@ class RecipeParser_Parser_Sparkpeoplecom {
             foreach ($lines as $line) {
                 if (empty($line)) {
                     continue;
-                } else if (RecipeParser_Text::matchSectionName($line)) {
-                    $line = RecipeParser_Text::formatSectionName($line);
+                } else if (\RecipeParser\Text::matchSectionName($line)) {
+                    $line = \RecipeParser\Text::formatSectionName($line);
                     $recipe->addInstructionsSection($line);
                 } else if (!empty($line)) {
-                    $line = RecipeParser_Text::formatAsOneLine($line);
-                    $line = RecipeParser_Text::stripLeadingNumbers($line);
+                    $line = \RecipeParser\Text::formatAsOneLine($line);
+                    $line = \RecipeParser\Text::stripLeadingNumbers($line);
                     if (stripos($line, "Recipe submitted by SparkPeople") === 0) {
                         continue;
                     }

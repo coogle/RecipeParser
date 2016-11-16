@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Bigovencom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Bigovencom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microformat stuff we can find.
-        $recipe = RecipeParser_Parser_Microformat::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\Microformat::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR BIGOVEN.COM
 
@@ -13,7 +15,7 @@ class RecipeParser_Parser_Bigovencom {
         $nodes = $xpath->query('//*[@name="resizeTo"]');
         if ($nodes->length) {
             $line = trim($nodes->item(0)->getAttribute("value")) . " servings";
-            $recipe->yield = RecipeParser_Text::formatYield($line);
+            $recipe->yield = \RecipeParser\Text::formatYield($line);
         }
 
         // Ingredients
@@ -28,7 +30,7 @@ class RecipeParser_Parser_Bigovencom {
             }
             $line = implode(' ', $parts);
             $line = str_replace(" ; ", "; ", $line);
-            $line = RecipeParser_Text::formatAsOneLine($line);
+            $line = \RecipeParser\Text::formatAsOneLine($line);
 
             $recipe->appendIngredient($line);
         }
@@ -40,7 +42,7 @@ class RecipeParser_Parser_Bigovencom {
         foreach ($nodes as $node) {
             $line = trim($node->nodeValue);
             if ($line == strtoupper($line)) {
-                $line = RecipeParser_Text::formatSectionName($line);
+                $line = \RecipeParser\Text::formatSectionName($line);
                 $recipe->addInstructionsSection($line);
             } else {
                 $recipe->appendInstruction($line);

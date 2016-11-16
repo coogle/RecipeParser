@@ -1,10 +1,12 @@
 <?php
 
-class RecipeParser_Parser_MicrodataDataVocabulary {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
-        $recipe = new RecipeParser_Recipe();
-        $xpath = new DOMXPath($doc);
+class MicrodataDataVocabulary {
+
+    static public function parse(\DOMDocument $doc, $url) {
+        $recipe = new \RecipeParser\Recipe();
+        $xpath = new \DOMXPath($doc);
 
         // Find the top-level node for Recipe microdata
         $microdata = null;
@@ -20,7 +22,7 @@ class RecipeParser_Parser_MicrodataDataVocabulary {
             $nodes = $xpath->query('.//*[@itemprop="name" and *[not(ancestor::.//*[@itemprop="ingredient"])]]', $microdata);
             if ($nodes->length) {
                 $value = $nodes->item(0)->nodeValue;
-                $value = RecipeParser_Text::formatTitle($value);
+                $value = \RecipeParser\Text::formatTitle($value);
                 $recipe->title = $value;
             }
 
@@ -39,12 +41,12 @@ class RecipeParser_Parser_MicrodataDataVocabulary {
                 $nodes = $xpath->query('.//*[@itemprop="' . $itemprop . '"]', $microdata);
                 if ($nodes->length) {
                     if ($value = $nodes->item(0)->getAttribute('datetime')) {
-                        $value = RecipeParser_Text::iso8601ToMinutes($value);
+                        $value = \RecipeParser\Text::iso8601ToMinutes($value);
                     } else if ($value = $nodes->item(0)->getAttribute('content')) {
-                        $value = RecipeParser_Text::iso8601ToMinutes($value);
+                        $value = \RecipeParser\Text::iso8601ToMinutes($value);
                     } else {
                         $value = trim($nodes->item(0)->nodeValue);
-                        $value = RecipeParser_Times::toMinutes($value);
+                        $value = \RecipeParser\Times::toMinutes($value);
                     }
                     if ($value) {
                         $recipe->time[$time_key] = $value;
@@ -65,7 +67,7 @@ class RecipeParser_Parser_MicrodataDataVocabulary {
             }
             if ($line) {
                 $line = preg_replace('/\s+/', ' ', $line);
-                $recipe->yield = RecipeParser_Text::formatYield($line);
+                $recipe->yield = \RecipeParser\Text::formatYield($line);
             }
 
             // Ingredients 
@@ -84,13 +86,13 @@ class RecipeParser_Parser_MicrodataDataVocabulary {
 
             foreach ($nodes as $node) {
                 $value = $node->nodeValue;
-                $value = RecipeParser_Text::formatAsOneLine($value);
+                $value = \RecipeParser\Text::formatAsOneLine($value);
                 if (empty($value)) {
                     continue;
                 }
 
                 if (RecipeParser_Text::matchSectionName($value)) {
-                    $value = RecipeParser_Text::formatSectionName($value);
+                    $value = \RecipeParser\Text::formatSectionName($value);
                     $recipe->addIngredientsSection($value);
                 } else {
                     $recipe->appendIngredient($value);
@@ -104,7 +106,7 @@ class RecipeParser_Parser_MicrodataDataVocabulary {
             if (!$found) {
                 $nodes = $xpath->query('.//*[@itemprop="instructions"]//li', $microdata);
                 if ($nodes->length) {
-                    RecipeParser_Text::parseInstructionsFromNodes($nodes, $recipe);
+                    \RecipeParser\Text::parseInstructionsFromNodes($nodes, $recipe);
                     $found = true;
                 }
             }
@@ -113,7 +115,7 @@ class RecipeParser_Parser_MicrodataDataVocabulary {
             if (!$found) {
                 $nodes = $xpath->query('.//*[@itemprop="instruction"]//*[contains(concat(" ", normalize-space(@class), " "), " instruction ")]', $microdata);
                 if ($nodes->length) {
-                    RecipeParser_Text::parseInstructionsFromNodes($nodes, $recipe);
+                    \RecipeParser\Text::parseInstructionsFromNodes($nodes, $recipe);
                     $found = true;
                 }
             }
@@ -123,12 +125,12 @@ class RecipeParser_Parser_MicrodataDataVocabulary {
                 $nodes = $xpath->query('.//*[@itemprop="instructions"]', $microdata);
                 if ($nodes->length > 1) {
                     // Multiple nodes
-                    RecipeParser_Text::parseInstructionsFromNodes($nodes, $recipe);
+                    \RecipeParser\Text::parseInstructionsFromNodes($nodes, $recipe);
                     $found = true;
                 } else if ($nodes->length == 1) {
                     // Blob
                     $str = $nodes->item(0)->nodeValue;
-                    RecipeParser_Text::parseInstructionsFromBlob($str, $recipe);
+                    \RecipeParser\Text::parseInstructionsFromBlob($str, $recipe);
                     $found = true;
                 }
             }
@@ -160,14 +162,14 @@ class RecipeParser_Parser_MicrodataDataVocabulary {
                 }
             }
             if ($photo_url) {
-                $recipe->photo_url = RecipeParser_Text::relativeToAbsolute($photo_url, $url);
+                $recipe->photo_url = \RecipeParser\Text::relativeToAbsolute($photo_url, $url);
             }
 
             // Credits
             $nodes = $xpath->query('.//*[@itemprop="author"]', $microdata);
             if ($nodes->length) {
                 $line = $nodes->item(0)->nodeValue;
-                $recipe->credits = RecipeParser_Text::formatCredits($line);
+                $recipe->credits = \RecipeParser\Text::formatCredits($line);
             }
 
         }

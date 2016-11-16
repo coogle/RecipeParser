@@ -1,31 +1,33 @@
 <?php
 
-class RecipeParser_Parser_Realsimplecom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
-        $recipe = new RecipeParser_Recipe();
-        $xpath = new DOMXPath($doc);
+class Realsimplecom {
+
+    static public function parse(\DOMDocument $doc, $url) {
+        $recipe = new \RecipeParser\Recipe();
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR REALSIMPLE.COM
 
         // Title
         $nodes = $xpath->query('//*[@id="page-title"]');
         if ($nodes->length) {
-            $line = RecipeParser_Text::formatTitle($nodes->item(0)->nodeValue);
+            $line = \RecipeParser\Text::formatTitle($nodes->item(0)->nodeValue);
             $recipe->title = $line;
         }
 
         // Times
         $nodes = $xpath->query('//*[@class="field-recipe-time"]');
         foreach ($nodes as $node) {
-            $line = RecipeParser_Text::formatAsOneLine($node->nodeValue);
+            $line = \RecipeParser\Text::formatAsOneLine($node->nodeValue);
 
             if (strpos($line, "Hands-On Time") !== false) {
                 $line = str_replace("Hands-On Time ", "", $line);
-                $recipe->time["prep"] = RecipeParser_Times::toMinutes($line);
+                $recipe->time["prep"] = \RecipeParser\Times::toMinutes($line);
             } else if (strpos($line, "Total Time") !== false) {
                 $line = str_replace("Total Time ", "", $line);
-                $recipe->time["total"] = RecipeParser_Times::toMinutes($line);
+                $recipe->time["total"] = \RecipeParser\Times::toMinutes($line);
 
             }
         }
@@ -34,7 +36,7 @@ class RecipeParser_Parser_Realsimplecom {
         $nodes = $xpath->query('//*[@class="field-yield"]');
         if ($nodes->length) {
             $line = $nodes->item(0)->nodeValue;
-            $line = RecipeParser_Text::formatYield($line);
+            $line = \RecipeParser\Text::formatYield($line);
             $recipe->yield = $line;
         }
 
@@ -42,7 +44,7 @@ class RecipeParser_Parser_Realsimplecom {
         $nodes = $xpath->query('//*[@class="field-ingredients"]');
         foreach ($nodes as $node) {
             $line = $node->nodeValue;
-            $line = RecipeParser_Text::formatAsOneLine($line);
+            $line = \RecipeParser\Text::formatAsOneLine($line);
             $recipe->appendIngredient($line);
         }
 
@@ -50,7 +52,7 @@ class RecipeParser_Parser_Realsimplecom {
         $nodes = $xpath->query('//*[@class="field-instructions"]//li');
         foreach ($nodes as $node) {
             $line = $node->nodeValue;
-            $line = RecipeParser_Text::formatAsOneLine($line);
+            $line = \RecipeParser\Text::formatAsOneLine($line);
             $recipe->appendInstruction($line);
         }
 
@@ -58,7 +60,7 @@ class RecipeParser_Parser_Realsimplecom {
         $nodes = $xpath->query('//*[@property="og:image"]');
         if ($nodes->length) {
             $photo_url = $nodes->item(0)->getAttribute('content');
-            $recipe->photo_url = RecipeParser_Text::relativeToAbsolute($photo_url, $url);
+            $recipe->photo_url = \RecipeParser\Text::relativeToAbsolute($photo_url, $url);
         }
 
         return $recipe;

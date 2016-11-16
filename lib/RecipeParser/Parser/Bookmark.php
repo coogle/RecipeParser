@@ -1,6 +1,8 @@
 <?php
 
-class RecipeParser_Parser_Bookmark {
+namespace RecipeParser\Parser;
+
+class Bookmark {
     // DOES NOT EXTEND IMPORTER_ABSTRACT!
 
     public static function getBookmarkAsRecipeStruct($html, $url) {
@@ -12,10 +14,10 @@ class RecipeParser_Parser_Bookmark {
 
         $doc = new DOMDocument();
         $doc->loadHTML('<?xml encoding="UTF-8">' . $html);
-        $xpath = new DOMXPath($doc);
+        $xpath = new \DOMXPath($doc);
 
         // This recipe will be stored as a bookmark
-        $recipe = new RecipeStruct();
+        $recipe = new \RecipeStruct();
         $recipe->url = $url;
         $recipe->status = "bookmark";
 
@@ -27,7 +29,7 @@ class RecipeParser_Parser_Bookmark {
         $nodes = $xpath->query('//title');
         if ($nodes->length) {
             $line = $nodes->item(0)->nodeValue;
-            $line = RecipeParser_Text::formatTitle($line);
+            $line = \RecipeParser\Text::formatTitle($line);
             if ($line) {
                 $title_tag = $line;
             }
@@ -35,7 +37,7 @@ class RecipeParser_Parser_Bookmark {
         $nodes = $xpath->query('//meta[@property="og:title"]');
         if ($nodes->length) {
             $line = $nodes->item(0)->getAttribute("content");
-            $line = RecipeParser_Text::formatTitle($line);
+            $line = \RecipeParser\Text::formatTitle($line);
             if ($line) {
                 $title_og_meta = $line;
             }
@@ -56,7 +58,7 @@ class RecipeParser_Parser_Bookmark {
         if ($nodes->length) {
             $photo_url = $nodes->item(0)->getAttribute("content");
             if ($photo_url) {
-                $recipe->photo_url = RecipeParser_Text::relativeToAbsolute($photo_url, $url);
+                $recipe->photo_url = \RecipeParser\Text::relativeToAbsolute($photo_url, $url);
             }
         }
 

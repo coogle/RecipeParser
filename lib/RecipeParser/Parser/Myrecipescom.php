@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Myrecipescom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Myrecipescom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataDataVocabulary::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataDataVocabulary::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR MYRECIPES.COM
 
@@ -14,7 +16,7 @@ class RecipeParser_Parser_Myrecipescom {
             $nodes = $xpath->query('//meta[@property="og:title"]');
             if ($nodes->length) {
                 $line = $nodes->item(0)->getAttribute("content");
-                $line = RecipeParser_Text::formatTitle($line);
+                $line = \RecipeParser\Text::formatTitle($line);
                 $recipe->title = $line;
             }
         }
@@ -48,7 +50,7 @@ class RecipeParser_Parser_Myrecipescom {
             foreach ($searches as $key=>$value) {
                 if (strpos($line, $value) === 0) {
                     $line = str_replace($value, "", $line);
-                    $recipe->time[$key] = RecipeParser_Times::toMinutes($line);
+                    $recipe->time[$key] = \RecipeParser\Times::toMinutes($line);
                 }
             }
         }

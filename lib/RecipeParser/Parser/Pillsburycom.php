@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Pillsburycom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Pillsburycom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataSchema::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataSchema::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR PILLSBURY.COM
 
@@ -15,12 +17,12 @@ class RecipeParser_Parser_Pillsburycom {
             foreach ($nodes as $node) {
                 if (trim($node->childNodes->item(1)->nodeValue) == "Prep Time") {
                     $line = trim($node->childNodes->item(3)->nodeValue);
-                    $recipe->time['prep'] = RecipeParser_Times::toMinutes($line);
+                    $recipe->time['prep'] = \RecipeParser\Times::toMinutes($line);
                     continue;
                 }
                 if (trim($node->childNodes->item(1)->nodeValue) == "Total Time") {
                     $line = trim($node->childNodes->item(3)->nodeValue);
-                    $recipe->time['total'] = RecipeParser_Times::toMinutes($line);
+                    $recipe->time['total'] = \RecipeParser\Times::toMinutes($line);
                     continue;
                 }
             }
@@ -32,7 +34,7 @@ class RecipeParser_Parser_Pillsburycom {
             foreach ($nodes as $node) {
                 if (trim($node->childNodes->item(1)->nodeValue) == "Servings") {
                     $line = trim($node->childNodes->item(3)->nodeValue);
-                    $recipe->yield = RecipeParser_Text::formatYield($line);
+                    $recipe->yield = \RecipeParser\Text::formatYield($line);
                 }
             }
         }
@@ -45,14 +47,14 @@ class RecipeParser_Parser_Pillsburycom {
             $nodes = $xpath->query('.//h2', $group);
             if ($nodes->length) {
                 $line = $nodes->item(0)->nodeValue;
-                $line = RecipeParser_Text::formatSectionName($line);
+                $line = \RecipeParser\Text::formatSectionName($line);
                 $recipe->addIngredientsSection($line);
             }
 
             $nodes = $xpath->query('.//*[@itemprop="ingredients"]', $group);
             foreach ($nodes as $node) {
                 $line = $node->nodeValue;
-                $line = RecipeParser_Text::formatAsOneLine($line);
+                $line = \RecipeParser\Text::formatAsOneLine($line);
                 $recipe->appendIngredient($line);
             }
 
@@ -66,7 +68,7 @@ class RecipeParser_Parser_Pillsburycom {
             $notes[] = $line;
         }
         $recipe->notes = implode("\n\n", $notes);
-        $recipe->notes = RecipeParser_Text::formatAsParagraphs($recipe->notes);
+        $recipe->notes = \RecipeParser\Text::formatAsParagraphs($recipe->notes);
 
         // Fix description
         $recipe->description = trim(preg_replace("/Servings \# \d+/", "", $recipe->description));

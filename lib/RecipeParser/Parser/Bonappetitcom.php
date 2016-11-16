@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Bonappetitcom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Bonappetitcom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataSchema::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataSchema::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR BONAPPETIT.COM
 
@@ -15,7 +17,7 @@ class RecipeParser_Parser_Bonappetitcom {
         foreach ($nodes as $node) {
             // <h3> contains section name.
             if ($node->nodeName == 'h3') {
-                $line = RecipeParser_Text::formatSectionName($node->nodeValue);
+                $line = \RecipeParser\Text::formatSectionName($node->nodeValue);
                 if ($line == "Ingredients") {
                     continue;
                 }
@@ -29,7 +31,7 @@ class RecipeParser_Parser_Bonappetitcom {
                 foreach ($ing_nodes as $ing_node) {
                     if ($ing_node->nodeName == 'li') {
                         $line = trim($ing_node->nodeValue);
-                        $line = RecipeParser_Text::formatAsOneLine($line);
+                        $line = \RecipeParser\Text::formatAsOneLine($line);
                         if ($line) {
                             $recipe->appendIngredient($line);
                         }
@@ -47,7 +49,7 @@ class RecipeParser_Parser_Bonappetitcom {
 
             // <h3> contains section name.
             if ($node->nodeName == 'h3') {
-                $line = RecipeParser_Text::formatSectionName($node->nodeValue);
+                $line = \RecipeParser\Text::formatSectionName($node->nodeValue);
                 if ($line == "Preparation") {
                     continue;
                 }

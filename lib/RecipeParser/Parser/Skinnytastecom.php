@@ -1,10 +1,12 @@
 <?php
 
-class RecipeParser_Parser_Skinnytastecom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
-        $recipe = new RecipeParser_Recipe();
-        $xpath = new DOMXPath($doc);
+class Skinnytastecom {
+
+    static public function parse(\DOMDocument $doc, $url) {
+        $recipe = new \RecipeParser\Recipe();
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR SKINNYTASTE.COM
 
@@ -13,7 +15,7 @@ class RecipeParser_Parser_Skinnytastecom {
         if ($nodes->length) {
             $value = $nodes->item(0)->nodeValue;
             $value = substr($value, 0, strpos($value, "|"));
-            $value = RecipeParser_Text::formatTitle($value);
+            $value = \RecipeParser\Text::formatTitle($value);
             $recipe->title = $value;
         }
 
@@ -76,20 +78,20 @@ class RecipeParser_Parser_Skinnytastecom {
             $value = trim($value);
             $parts = explode("\n\n", $value);
             if (count($parts) > 1) {
-                $value = RecipeParser_Text::formatSectionName(array_shift($parts));
+                $value = \RecipeParser\Text::formatSectionName(array_shift($parts));
                 $recipe->addIngredientsSection($value);
             }
             // Split ingredients
             $parts = explode("\n", $parts[0]);
             foreach ($parts as $value) {
-                $value = RecipeParser_Text::formatAsOneLine($value);
+                $value = \RecipeParser\Text::formatAsOneLine($value);
                 $recipe->appendIngredient($value);
             }
         }
 
         // Parse instructions
         $value = array_shift($sections);
-        RecipeParser_Text::parseInstructionsFromBlob($value, $recipe);
+        \RecipeParser\Text::parseInstructionsFromBlob($value, $recipe);
 
         // Photo
         $nodes = $xpath->query('//*[@class="post-body entry-content"]//img');

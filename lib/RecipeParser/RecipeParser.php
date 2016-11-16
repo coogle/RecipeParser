@@ -1,9 +1,11 @@
 <?php
 
+namespace RecipeParser;
+
 class RecipeParser {
 
     static private $registered_parsers = null;
-    static private $parsers_ini_file_relpath = "RecipeParser/Parser/parsers.ini";
+    static private $parsers_ini_file_relpath = "Parser/parsers.ini";
 
     const SCHEMA_SPEC              = "MicrodataSchema";
     const DATA_VOCABULARY_SPEC     = "MicrodataDataVocabulary";
@@ -111,7 +113,7 @@ class RecipeParser {
         }
 
         // Initialize the right parser and run it.
-        $classname = 'RecipeParser_Parser_' . $parser;
+        $classname = '\RecipeParser\Parser\\' . $parser;
         $recipe = $classname::parse($doc, $url);
         $recipe->url = $url;
         

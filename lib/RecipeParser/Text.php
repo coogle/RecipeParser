@@ -1,6 +1,8 @@
 <?php
 
-class RecipeParser_Text {
+namespace RecipeParser;
+
+class Text {
 
     const IGNORE_LEADING_NUMBERS = "IGNORE_LEADING_NUMBERS";
 
@@ -92,8 +94,8 @@ ONETSP_TIME: $time
 
         // Strip out script tags so they don't accidentally get executed if we ever display
         // clipped content to end-users.
-        $html = RecipeParser_Text::stripTagAndContents('script', $html);
-        $html = RecipeParser_Text::stripConditionalComments($html);
+        $html = \RecipeParser\Text::stripTagAndContents('script', $html);
+        $html = \RecipeParser\Text::stripConditionalComments($html);
 
         return $html;
     }
@@ -524,7 +526,7 @@ ONETSP_TIME: $time
         }
 
         // dirty absolute URL
-        $abs = "$host$path/$rel";
+        $abs = "{$host}$path/$rel";
 
         // replace '//' or '/./' or '/foo/../' with '/'
         $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#');
@@ -578,7 +580,7 @@ ONETSP_TIME: $time
     public static function getDomDocument($html) {
         libxml_use_internal_errors(true);
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $html = mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8");
         $doc->loadHTML('<?xml encoding="UTF-8">' . $html);
 

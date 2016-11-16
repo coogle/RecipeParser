@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Kingarthurflourcom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Kingarthurflourcom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataDataVocabulary::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataDataVocabulary::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR KINGARTHURFLOUR.COM
 
@@ -17,14 +19,14 @@ class RecipeParser_Parser_Kingarthurflourcom {
             $children = $xpath->query('.//*[@id="IngredientHeading"]', $node);
             if ($children->length) {
                 $line = $children->item(0)->nodeValue;
-                $line = RecipeParser_Text::formatSectionName($line);
+                $line = \RecipeParser\Text::formatSectionName($line);
                 $recipe->addIngredientsSection($line);
             }
 
             $children = $xpath->query('.//*[@id="IngredientLine"]', $node);
             foreach ($children as $child) {
                 $line = $child->nodeValue;
-                $line = RecipeParser_Text::formatAsOneLine($line);
+                $line = \RecipeParser\Text::formatAsOneLine($line);
                 $recipe->appendIngredient($line);
             }
 
@@ -59,11 +61,11 @@ class RecipeParser_Parser_Kingarthurflourcom {
             foreach ($lines as $line) {
                 if (strpos($line, "SECTION:") === 0) {
                     $line = substr($line, 8);
-                    $line = RecipeParser_Text::formatSectionName($line);
+                    $line = \RecipeParser\Text::formatSectionName($line);
                     $recipe->addInstructionsSection($line);
                 } else {
-                    $line = RecipeParser_Text::formatAsOneLine($line);
-                    $line = RecipeParser_Text::stripLeadingNumbers($line);
+                    $line = \RecipeParser\Text::formatAsOneLine($line);
+                    $line = \RecipeParser\Text::stripLeadingNumbers($line);
                     if (stripos($line, "yield:") === 0) {
                         continue;
                     }

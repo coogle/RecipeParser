@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Bhgcom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Bhgcom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataSchema::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataSchema::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR BHG.COM
 
@@ -15,14 +17,14 @@ class RecipeParser_Parser_Bhgcom {
 
         $nodes = $xpath->query('//*[@class="recipeTips"]//li');
         foreach ($nodes as $node) {
-            $value = RecipeParser_Text::FormatAsOneLine($node->nodeValue);
+            $value = \RecipeParser\Text::FormatAsOneLine($node->nodeValue);
             $value = preg_replace("/^(Tip|Note)\s*(.*)$/", "$2", $value);
             $notes[] = $value;
         }
 
         $nodes = $xpath->query('//*[@class="recipeInfo"]//*[@class="type"]');
         foreach ($nodes as $node) {
-            $value = RecipeParser_Text::formatAsOneLine($node->nodeValue);
+            $value = \RecipeParser\Text::formatAsOneLine($node->nodeValue);
             if (strpos($value, "Makes:") !== false) {
                 continue;
             }

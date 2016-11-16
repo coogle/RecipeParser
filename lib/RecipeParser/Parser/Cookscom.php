@@ -1,10 +1,12 @@
 <?php
 
-class RecipeParser_Parser_Cookscom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
-        $recipe = new RecipeParser_Recipe();
-        $xpath = new DOMXPath($doc);
+class Cookscom {
+
+    static public function parse(\DOMDocument $doc, $url) {
+        $recipe = new \RecipeParser\Recipe();
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR COOKS.COM
 
@@ -36,13 +38,13 @@ class RecipeParser_Parser_Cookscom {
             } else if ($node->getAttribute('class') == "instructions") {
                 foreach ($node->childNodes as $child) {
                     $line = $child->nodeValue;
-                    $line = RecipeParser_Text::formatAsOneLine($line);
+                    $line = \RecipeParser\Text::formatAsOneLine($line);
                     $recipe->appendInstruction($line);
                 }
 
             // Section title
             } else if ($node->getAttribute("class") == "section") {
-                $title = RecipeParser_Text::formatSectionName($node->nodeValue);
+                $title = \RecipeParser\Text::formatSectionName($node->nodeValue);
                 $recipe->addIngredientsSection($title);
                 if (count($recipe->instructions) > 0) {
                     $recipe->addInstructionsSection($title);

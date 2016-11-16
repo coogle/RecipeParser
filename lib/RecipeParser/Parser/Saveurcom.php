@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Saveurcom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Saveurcom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataDataVocabulary::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataDataVocabulary::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR SAVEUR.COM
 
@@ -19,7 +21,7 @@ class RecipeParser_Parser_Saveurcom {
 
                 // Yield
                 if (!$recipe->yield && preg_match("/(makes|yields|serves|servings)/i", $str) && preg_match("/\d/", $str)) {
-                    $recipe->yield = RecipeParser_Text::formatYield($str);
+                    $recipe->yield = \RecipeParser\Text::formatYield($str);
                     continue;
                 }
 
@@ -35,11 +37,11 @@ class RecipeParser_Parser_Saveurcom {
                 if (!$found_ingredients) {
                     continue;
                 } else if (!$found_instructions) {
-                    $str = RecipeParser_Text::formatAsOneLine($str);
+                    $str = \RecipeParser\Text::formatAsOneLine($str);
                     $recipe->appendIngredient($str);
                 } else {
-                    $str = RecipeParser_Text::formatAsOneLine($str);
-                    $str = RecipeParser_Text::stripLeadingNumbers($str);
+                    $str = \RecipeParser\Text::formatAsOneLine($str);
+                    $str = \RecipeParser\Text::stripLeadingNumbers($str);
                     $recipe->appendInstruction($str);
                 }
 

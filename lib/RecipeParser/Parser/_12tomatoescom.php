@@ -1,18 +1,20 @@
 <?php
 
-class RecipeParser_Parser_12tomatoescom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class _12tomatoescom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataSchema::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataSchema::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR 12TOMATOES.COM
 
         // Title
         $nodes = $xpath->query('//h3//strong');
         if ($nodes->length) {
-            $line = RecipeParser_Text::formatAsOneLine($nodes->item(0)->nodeValue);
+            $line = \RecipeParser\Text::formatAsOneLine($nodes->item(0)->nodeValue);
             $recipe->title = $line;
         }
 
@@ -21,7 +23,7 @@ class RecipeParser_Parser_12tomatoescom {
         foreach ($nodes as $node) {
             $line = trim($node->nodeValue);
             if (strpos($line, "Yield") === 0) {
-                $line = RecipeParser_Text::formatYield($line);
+                $line = \RecipeParser\Text::formatYield($line);
                 $recipe->yield = $line;
                 break;
             }
@@ -31,7 +33,7 @@ class RecipeParser_Parser_12tomatoescom {
         $nodes = $xpath->query('//div[@class="post-body"]//ul/li');
         foreach ($nodes as $node) {
             $line = $node->nodeValue;
-            $line = RecipeParser_Text::formatAsOneLine($line);
+            $line = \RecipeParser\Text::formatAsOneLine($line);
             $recipe->appendIngredient($line);
         }
 
@@ -39,7 +41,7 @@ class RecipeParser_Parser_12tomatoescom {
         $nodes = $xpath->query('//div[@class="post-body"]//ol/li');
         foreach ($nodes as $node) {
             $line = $node->nodeValue;
-            $line = RecipeParser_Text::formatAsOneLine($line);
+            $line = \RecipeParser\Text::formatAsOneLine($line);
             $recipe->appendInstruction($line);
         }
 

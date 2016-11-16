@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Epicuriouscom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Epicuriouscom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataSchema::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataSchema::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR EPICURIOUS.COM
 
@@ -16,7 +18,7 @@ class RecipeParser_Parser_Epicuriouscom {
 
             // <strong> contains ingredient section names
             if ($node->nodeName == 'strong') {
-                $line = RecipeParser_Text::formatSectionName($node->nodeValue);
+                $line = \RecipeParser\Text::formatSectionName($node->nodeValue);
                 $recipe->addIngredientsSection($line);
                 continue;
             }

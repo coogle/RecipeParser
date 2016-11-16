@@ -1,10 +1,12 @@
 <?php
 
-class RecipeParser_Parser_Microformat {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
-        $recipe = new RecipeParser_Recipe();
-        $xpath = new DOMXPath($doc);
+class Microformat {
+
+    static public function parse(\DOMDocument $doc, $url) {
+        $recipe = new \RecipeParser\Recipe();
+        $xpath = new \DOMXPath($doc);
 
         $hrecipe = null;
         if (!$hrecipe) {
@@ -26,21 +28,21 @@ class RecipeParser_Parser_Microformat {
             $nodes = $xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " fn ")]', $hrecipe);
             if ($nodes->length) {
                 $line = $nodes->item(0)->nodeValue;
-                $recipe->title = RecipeParser_Text::formatTitle($line);
+                $recipe->title = \RecipeParser\Text::formatTitle($line);
             }
 
             // Summary 
             $nodes = $xpath->query('.//*[@class="summary"]', $hrecipe);
             if ($nodes->length) {
                 $line = $nodes->item(0)->nodeValue;
-                $recipe->description = RecipeParser_Text::formatAsParagraphs($line);
+                $recipe->description = \RecipeParser\Text::formatAsParagraphs($line);
             }
 
             // Credits
             $nodes = $xpath->query('.//*[@class="author"]', $hrecipe);
             if ($nodes->length) {
                 $line = $nodes->item(0)->nodeValue;
-                $recipe->credits = RecipeParser_Text::formatCredits($line);
+                $recipe->credits = \RecipeParser\Text::formatCredits($line);
             }
 
             // Photo
@@ -57,26 +59,26 @@ class RecipeParser_Parser_Microformat {
                 }
             }
             if ($photo_url) {
-                $recipe->photo_url = RecipeParser_Text::relativeToAbsolute($photo_url, $url);
+                $recipe->photo_url = \RecipeParser\Text::relativeToAbsolute($photo_url, $url);
             }
 
             // Yield
             $nodes = $xpath->query('.//*[@class="yield"]', $hrecipe);
             if ($nodes->length) {
                 $line = $nodes->item(0)->nodeValue;
-                $recipe->yield = RecipeParser_Text::formatYield($line);
+                $recipe->yield = \RecipeParser\Text::formatYield($line);
             }
 
             // Prep Times
             $nodes = $xpath->query('.//*[@class="prepTime"]//*[@class="value-title"]', $hrecipe);
             if ($nodes->length) {
                 $value = $nodes->item(0)->getAttribute('title');
-                $recipe->time['prep'] = RecipeParser_Text::iso8601ToMinutes($value);
+                $recipe->time['prep'] = \RecipeParser\Text::iso8601ToMinutes($value);
             } else {
                 $nodes = $xpath->query('.//*[@class="preptime"]', $hrecipe);
                 if ($nodes->length) {
                     $value = $nodes->item(0)->nodeValue;
-                    $recipe->time['prep'] = RecipeParser_Times::toMinutes($value);
+                    $recipe->time['prep'] = \RecipeParser\Times::toMinutes($value);
                 }
             }
 
@@ -84,12 +86,12 @@ class RecipeParser_Parser_Microformat {
             $nodes = $xpath->query('.//*[@class="cookTime"]//*[@class="value-title"]', $hrecipe);
             if ($nodes->length) {
                 $value = $nodes->item(0)->getAttribute('title');
-                $recipe->time['cook'] = RecipeParser_Text::iso8601ToMinutes($value);
+                $recipe->time['cook'] = \RecipeParser\Text::iso8601ToMinutes($value);
             } else {
                 $nodes = $xpath->query('.//*[@class="cooktime"]', $hrecipe);
                 if ($nodes->length) {
                     $value = $nodes->item(0)->nodeValue;
-                    $recipe->time['cook'] = RecipeParser_Times::toMinutes($value);
+                    $recipe->time['cook'] = \RecipeParser\Times::toMinutes($value);
                 }
             }
 
@@ -97,17 +99,17 @@ class RecipeParser_Parser_Microformat {
             $nodes = $xpath->query('.//*[@class="totalTime"]//*[@class="value-title"]', $hrecipe);
             if ($nodes->length) {
                 $value = $nodes->item(0)->getAttribute('title');
-                $recipe->time['total'] = RecipeParser_Text::iso8601ToMinutes($value);
+                $recipe->time['total'] = \RecipeParser\Text::iso8601ToMinutes($value);
             } else {
                 $nodes = $xpath->query('.//*[@class="duration"]//*[@class="value-title"]', $hrecipe);
                 if ($nodes->length) {
                     $value = $nodes->item(0)->getAttribute('title');
-                    $recipe->time['total'] = RecipeParser_Text::iso8601ToMinutes($value);
+                    $recipe->time['total'] = \RecipeParser\Text::iso8601ToMinutes($value);
                 } else {
                     $nodes = $xpath->query('.//*[@class="duration"]', $hrecipe);
                     if ($nodes->length) {
                         $value = $nodes->item(0)->nodeValue;
-                        $recipe->time['total'] = RecipeParser_Times::toMinutes($value);
+                        $recipe->time['total'] = \RecipeParser\Times::toMinutes($value);
                     }
                 }
             }
@@ -118,7 +120,7 @@ class RecipeParser_Parser_Microformat {
 
                 $line = $node->nodeValue;
                 $line = trim($line);
-                $line = RecipeParser_Text::formatAsOneLine($line);
+                $line = \RecipeParser\Text::formatAsOneLine($line);
 
                 // Skip lines that contain no word-like characters (sometimes used as section dividers).
                 if (!preg_match("/\w/", $line)) {
@@ -127,14 +129,14 @@ class RecipeParser_Parser_Microformat {
 
                 // Section name delineated with dashes. E.g. "---Cake---"
                 if (preg_match('/^\-+([^\-]{1}.*[^\-]{1})\-+$/', $line, $m)) {
-                    $line = RecipeParser_Text::formatSectionName($m[1]);
+                    $line = \RecipeParser\Text::formatSectionName($m[1]);
                     $recipe->addIngredientsSection($line);
                     continue;
                 }
 
                 // Section name with colon.
                 if (preg_match('/^(.+)\:$/', $line, $m)) {
-                    $line = RecipeParser_Text::formatSectionName($m[1]);
+                    $line = \RecipeParser\Text::formatSectionName($m[1]);
                     $recipe->addIngredientsSection($line);
                     continue;
                 } 
@@ -149,7 +151,7 @@ class RecipeParser_Parser_Microformat {
             if (!$found) {
                 $nodes = $xpath->query('//*[contains(concat(" ", normalize-space(@class), " "), " instructions ")]//li');
                 if ($nodes->length) {
-                    RecipeParser_Text::parseInstructionsFromNodes($nodes, $recipe);
+                    \RecipeParser\Text::parseInstructionsFromNodes($nodes, $recipe);
                     $found = true;
                 }
             }
@@ -160,7 +162,7 @@ class RecipeParser_Parser_Microformat {
                         .'//*[contains(concat(" ", normalize-space(@class), " "), " instruction ")]';
                 $nodes = $xpath->query($query);
                 if ($nodes->length) {
-                    RecipeParser_Text::parseInstructionsFromNodes($nodes, $recipe);
+                    \RecipeParser\Text::parseInstructionsFromNodes($nodes, $recipe);
                     $found = true;
                 }
 
@@ -171,12 +173,12 @@ class RecipeParser_Parser_Microformat {
                 $nodes = $xpath->query('//*[contains(concat(" ", normalize-space(@class), " "), " instructions ")]');
                 if ($nodes->length > 1) {
                     // Multiple nodes
-                    RecipeParser_Text::parseInstructionsFromNodes($nodes, $recipe);
+                    \RecipeParser\Text::parseInstructionsFromNodes($nodes, $recipe);
                     $found = true;
                 } else if ($nodes->length == 1) {
                     // Blob
                     $str = $nodes->item(0)->nodeValue;
-                    RecipeParser_Text::parseInstructionsFromBlob($str, $recipe);
+                    \RecipeParser\Text::parseInstructionsFromBlob($str, $recipe);
                     $found = true;
                 }
             }

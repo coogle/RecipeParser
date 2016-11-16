@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Tasteofhomecom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Tasteofhomecom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataSchema::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataSchema::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR TASTEOFHOME.COM
 
@@ -13,7 +15,7 @@ class RecipeParser_Parser_Tasteofhomecom {
         $nodes = $xpath->query('//div[@class="rd_editornote margin_bottom"]');
         if ($nodes->length) {
             $line = $nodes->item(0)->nodeValue;
-            $line = RecipeParser_Text::formatAsOneLine($line);
+            $line = \RecipeParser\Text::formatAsOneLine($line);
             $line = preg_replace("/Editor's Note:\s+/", "", $line);
             $recipe->notes = $line;
         }

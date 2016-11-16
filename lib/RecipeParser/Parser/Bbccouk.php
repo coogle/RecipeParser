@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Bbccouk {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Bbccouk {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microformat stuff we can find.
-        $recipe = RecipeParser_Parser_Microformat::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\Microformat::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR BDCCO.UK
 
@@ -17,7 +19,7 @@ class RecipeParser_Parser_Bbccouk {
             foreach ($nodes as $node) {
                 if ($node->nodeName == 'dt') {
                     $value = $node->nodeValue;
-                    $value = RecipeParser_Text::formatSectionName($value);
+                    $value = \RecipeParser\Text::formatSectionName($value);
                     $recipe->addIngredientsSection($value);
                 
                 } else if ($node->nodeName == 'dd') {

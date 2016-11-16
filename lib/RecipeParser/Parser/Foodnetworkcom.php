@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Foodnetworkcom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Foodnetworkcom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataSchema::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataSchema::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR FOODNETWORK.COM
 
@@ -25,7 +27,7 @@ class RecipeParser_Parser_Foodnetworkcom {
                         
                         // Section titles might be all uppercase ingredients
                         if ($line == strtoupper($line)) {
-                            $line = RecipeParser_Text::formatSectionName($line);
+                            $line = \RecipeParser\Text::formatSectionName($line);
                             $recipe->addIngredientsSection($line);
                             continue;
                         }
@@ -36,14 +38,14 @@ class RecipeParser_Parser_Foodnetworkcom {
                         } else if (stripos($line, "recipe follows") !== false) {
                             continue;
                         } else {
-                            $line = RecipeParser_Text::formatAsOneLine($line);
+                            $line = \RecipeParser\Text::formatAsOneLine($line);
                             $recipe->appendIngredient($line);
                         }
 
                     // Section titles
                     } else if ($ing_node->nodeName == 'li' && $ing_node->getAttribute("class") == "subtitle") {
                         $line = trim($ing_node->nodeValue);
-                        $line = RecipeParser_Text::formatSectionName($line);
+                        $line = \RecipeParser\Text::formatSectionName($line);
                         $recipe->addIngredientsSection($line);
                     }
                 }
@@ -57,10 +59,10 @@ class RecipeParser_Parser_Foodnetworkcom {
         $nodes = $xpath->query('//*[@itemprop="recipeInstructions"]/*');
         foreach ($nodes as $node) {
             if ($node->nodeName == "span") {
-                $line = RecipeParser_Text::formatSectionName($node->nodeValue);
+                $line = \RecipeParser\Text::formatSectionName($node->nodeValue);
                 $recipe->addInstructionsSection($line);
             } else if ($node->nodeName == "p") {
-                $line = RecipeParser_Text::formatAsOneLine($node->nodeValue);
+                $line = \RecipeParser\Text::formatAsOneLine($node->nodeValue);
 
                 if (stripos($line, "recipe courtesy") === 0) {
                     continue;

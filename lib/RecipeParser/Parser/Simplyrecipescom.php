@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Simplyrecipescom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Simplyrecipescom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataSchema::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataSchema::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR SIMPLYRECIPES.COM
 
@@ -26,7 +28,7 @@ class RecipeParser_Parser_Simplyrecipescom {
                     for ($i = 0; $i < count($lines); $i++) {
                         $line = trim($lines[$i]);
                         if ($i == 0) {
-                            $line = RecipeParser_Text::formatSectionName($line);
+                            $line = \RecipeParser\Text::formatSectionName($line);
                             $recipe->addIngredientsSection($line);
                         } else {
                             $line = trim($line);
@@ -37,7 +39,7 @@ class RecipeParser_Parser_Simplyrecipescom {
                 // Otherwise, we're dealing with a normal section for hrecipe, and 
                 // ingredients for the section will follow as <ul> elements.
                 } else {
-                    $value = RecipeParser_Text::formatSectionName($value);
+                    $value = \RecipeParser\Text::formatSectionName($value);
                     $recipe->addIngredientsSection($value);
                 }
             } else if ($node->nodeName == 'ul') {
@@ -53,14 +55,14 @@ class RecipeParser_Parser_Simplyrecipescom {
         $nodes = $xpath->query('//*[@id="recipe-intronote"]');
         if ($nodes->length) {
             $value = $nodes->item(0)->nodeValue;
-            $recipe->notes = RecipeParser_Text::formatAsParagraphs($value);
+            $recipe->notes = \RecipeParser\Text::formatAsParagraphs($value);
         }
 
         // Photo URL to replace og:image 
         $nodes = $xpath->query('//img[@itemprop="image"]');
         if ($nodes->length) {
             $photo_url = $nodes->item(0)->getAttribute("src");
-            $recipe->photo_url = RecipeParser_Text::relativeToAbsolute($photo_url, $url);
+            $recipe->photo_url = \RecipeParser\Text::relativeToAbsolute($photo_url, $url);
         }
 
         return $recipe;

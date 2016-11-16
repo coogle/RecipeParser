@@ -1,10 +1,12 @@
 <?php
 
-class RecipeParser_Parser_Eatingwellcom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
-        $recipe = new RecipeParser_Recipe();
-        $xpath = new DOMXPath($doc);
+class Eatingwellcom {
+
+    static public function parse(\DOMDocument $doc, $url) {
+        $recipe = new \RecipeParser\Recipe();
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR EATINGWELL.COM
 
@@ -12,7 +14,7 @@ class RecipeParser_Parser_Eatingwellcom {
         $nodes = $xpath->query('//h1[@itemprop="name"]');
         if ($nodes->length) {
             $line = $nodes->item(0)->nodeValue;
-            $line = RecipeParser_Text::formatTitle($line);
+            $line = \RecipeParser\Text::formatTitle($line);
             $recipe->title = $line;
         }
 
@@ -20,7 +22,7 @@ class RecipeParser_Parser_Eatingwellcom {
         $nodes = $xpath->query('//*[@itemprop="description"]');
         if ($nodes->length) {
             $line = $nodes->item(0)->nodeValue;
-            $line = RecipeParser_Text::formatAsOneLine($line);
+            $line = \RecipeParser\Text::formatAsOneLine($line);
             $recipe->description = $line;
         }
 
@@ -28,7 +30,7 @@ class RecipeParser_Parser_Eatingwellcom {
         $nodes = $xpath->query('//span[@itemprop="author"]');
         if ($nodes->length) {
             $line = $nodes->item(0)->nodeValue;
-            $line = RecipeParser_Text::formatCredits($line);
+            $line = \RecipeParser\Text::formatCredits($line);
             $recipe->credits = $line;
         }
 
@@ -36,28 +38,28 @@ class RecipeParser_Parser_Eatingwellcom {
         $nodes = $xpath->query('//*[@itemprop="prepTime"]');
         if ($nodes->length) {
             $value = $nodes->item(0)->getAttribute("content");
-            $recipe->time['prep'] = RecipeParser_Text::iso8601ToMinutes($value);
+            $recipe->time['prep'] = \RecipeParser\Text::iso8601ToMinutes($value);
         }
 
         // Total Time
         $nodes = $xpath->query('//*[@itemprop="totalTime"]');
         if ($nodes->length) {
             $value = $nodes->item(0)->getAttribute("content");
-            $recipe->time['total'] = RecipeParser_Text::iso8601ToMinutes($value);
+            $recipe->time['total'] = \RecipeParser\Text::iso8601ToMinutes($value);
         }
 
         // Yield
         $nodes = $xpath->query('//*[@itemprop="recipeyield"]');
         if ($nodes->length) {
             $line = $nodes->item(0)->nodeValue;
-            $recipe->yield = RecipeParser_Text::formatYield($line);
+            $recipe->yield = \RecipeParser\Text::formatYield($line);
         }
 
         // Ingredients
         $nodes = $xpath->query('//*[@itemprop="ingredients"]');
         foreach ($nodes as $node) {
             $line = $node->nodeValue;
-            $line = RecipeParser_Text::formatAsOneLine($line);
+            $line = \RecipeParser\Text::formatAsOneLine($line);
             $recipe->appendIngredient($line);
         }
 
@@ -65,7 +67,7 @@ class RecipeParser_Parser_Eatingwellcom {
         $nodes = $xpath->query('//*[@itemprop="recipeinstructions"]/li');
         foreach ($nodes as $node) {
             $line = $node->nodeValue;
-            $line = RecipeParser_Text::formatAsOneLine($line);
+            $line = \RecipeParser\Text::formatAsOneLine($line);
             $recipe->appendInstruction($line);
         }
 

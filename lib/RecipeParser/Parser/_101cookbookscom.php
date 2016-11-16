@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_101cookbookscom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class _101cookbookscom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microformat stuff we can find.
-        $recipe = RecipeParser_Parser_Microformat::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\Microformat::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR 101COOKBOOKS.COM
 
@@ -49,10 +51,10 @@ class RecipeParser_Parser_101cookbookscom {
             }
         }
         foreach ($lines as $line) {
-            if (RecipeParser_Text::matchSectionName($line)) {
-                $recipe->addIngredientsSection(RecipeParser_Text::formatSectionName($line));
+            if (\RecipeParser\Text::matchSectionName($line)) {
+                $recipe->addIngredientsSection(\RecipeParser\Text::formatSectionName($line));
             } else {
-                $line = RecipeParser_Text::formatAsOneLine($line);
+                $line = \RecipeParser\Text::formatAsOneLine($line);
                 $recipe->appendIngredient($line);
             }
         }
@@ -84,11 +86,11 @@ class RecipeParser_Parser_101cookbookscom {
 
                     // Servings?
                     if (stripos($line, "Serves ") === 0) {
-                        $recipe->yield = RecipeParser_Text::formatYield($line);
+                        $recipe->yield = \RecipeParser\Text::formatYield($line);
                         continue;
                     }
 
-                    $recipe->appendInstruction(RecipeParser_Text::formatAsOneLine($node->nodeValue));
+                    $recipe->appendInstruction(\RecipeParser\Text::formatAsOneLine($node->nodeValue));
                 }
             }
         }

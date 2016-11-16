@@ -1,5 +1,7 @@
 <?php
 
+namespace RecipeParser;
+
 class FileUtil {
 
     public static function tempFilenameFromUrl($url) {
@@ -11,7 +13,7 @@ class FileUtil {
     }
     
     public static function downloadPage($url) {
-        $user_agent = "Onetsp-RecipeParser/0.1 (+https://github.com/onetsp/RecipeParser)";
+        $user_agent = "RecipeParser/0.1 (+https://github.com/onetsp/RecipeParser)";
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -46,12 +48,12 @@ class FileUtil {
             // Fetch and cleanup the HTML
             error_log("Downloading recipe from url: $url");
 
-            $html = FileUtil::downloadPage($url);
-            $html = RecipeParser_Text::forceUTF8($html);
-            $html = RecipeParser_Text::cleanupClippedRecipeHtml($html);
+            $html = static::downloadPage($url);
+            $html = \RecipeParser\Text::forceUTF8($html);
+            $html = \RecipeParser\Text::cleanupClippedRecipeHtml($html);
 
             // Append some notes to the HTML
-            $comments = RecipeParser_Text::getRecipeMetadataComment($url, "curl");
+            $comments = \RecipeParser\Text::getRecipeMetadataComment($url, "curl");
             $html = $comments . "\n\n" . $html;
 
             error_log("Saving recipe to file $filename");

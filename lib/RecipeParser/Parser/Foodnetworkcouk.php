@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Foodnetworkcouk {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Foodnetworkcouk {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataDataVocabulary::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataDataVocabulary::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR FOODNETWORKCO.UK
 
@@ -15,11 +17,11 @@ class RecipeParser_Parser_Foodnetworkcouk {
         foreach ($nodes as $node) {
             if ($node->getAttribute("itemprop")) {
                 $line = $node->nodeValue;
-                $line = RecipeParser_Text::formatAsOneLine($line);
+                $line = \RecipeParser\Text::formatAsOneLine($line);
                 $recipe->appendIngredient($line);
             } else {
                 $line = $node->nodeValue;
-                $line = RecipeParser_Text::formatSEctionName($line);
+                $line = \RecipeParser\Text::formatSEctionName($line);
                 $recipe->addIngredientsSection($line);
             }
         }
@@ -29,7 +31,7 @@ class RecipeParser_Parser_Foodnetworkcouk {
         $nodes = $xpath->query('//*[@id="method-box"]//p');
         foreach ($nodes as $node) {
             $line = $node->nodeValue;
-            $line = RecipeParser_Text::formatAsOneLine($line);
+            $line = \RecipeParser\Text::formatAsOneLine($line);
             if ($line) {
                 $recipe->appendInstruction($line);
             }

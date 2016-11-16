@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Marthastewartcom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Marthastewartcom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataSchema::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataSchema::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR MARTHASTEWART.COM
 
@@ -15,7 +17,7 @@ class RecipeParser_Parser_Marthastewartcom {
             $line = $node->nodeValue;
             if (stripos($line, "servings") !== false) {
                 $line = preg_replace("/servings\:?.*(\d+)/i", "$1", $line);
-                $line = RecipeParser_Text::formatYield($line);
+                $line = \RecipeParser\Text::formatYield($line);
                 $recipe->yield = $line;
             }
         }
@@ -24,7 +26,7 @@ class RecipeParser_Parser_Marthastewartcom {
         $nodes = $xpath->query('//*[@itemprop="page-dek"]');
         if ($nodes->length) {
             $line = $nodes->item(0)->nodeValue;
-            $line = RecipeParser_Text::formatAsOneLine($line);
+            $line = \RecipeParser\Text::formatAsOneLine($line);
             $recipe->description = $line;
         }
 
@@ -47,7 +49,7 @@ class RecipeParser_Parser_Marthastewartcom {
                 $section_nodes = $xpath->query('.//*[@class="components-group-header"]', $section_node);
                 if ($section_nodes->length) {
                     $line = $section_nodes->item(0)->nodeValue;
-                    $line = RecipeParser_Text::formatSectionName($line);
+                    $line = \RecipeParser\Text::formatSectionName($line);
                     if (!empty($line)) {
                         $recipe->addIngredientsSection($line);
                     }
@@ -56,7 +58,7 @@ class RecipeParser_Parser_Marthastewartcom {
                 if ($ing_nodes->length) {
                     foreach ($ing_nodes as $node) {
                         $line = $node->nodeValue;
-                        $line = RecipeParser_Text::formatAsOneLine($line);
+                        $line = \RecipeParser\Text::formatAsOneLine($line);
                         $recipe->appendIngredient($line);
                     }
                 }
@@ -67,7 +69,7 @@ class RecipeParser_Parser_Marthastewartcom {
         $recipe->resetInstructions();
         $nodes = $xpath->query('//*[@class="directions-item"]');
         foreach ($nodes as $node) {
-            $line = RecipeParser_Text::formatAsOneLine($node->nodeValue);
+            $line = \RecipeParser\Text::formatAsOneLine($node->nodeValue);
             $recipe->appendInstruction($line);
         }
 
@@ -75,7 +77,7 @@ class RecipeParser_Parser_Marthastewartcom {
         $nodes = $xpath->query('//img[@itemprop="image"]');
         if ($nodes->length) {
             $photo_url = $nodes->item(0)->getAttribute("data-original");
-            $recipe->photo_url = RecipeParser_Text::relativeToAbsolute($photo_url, $url);
+            $recipe->photo_url = \RecipeParser\Text::relativeToAbsolute($photo_url, $url);
         }
 
         return $recipe;

@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Foodcom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Foodcom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataSchema::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataSchema::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR FOOD.COM
 
@@ -26,7 +28,7 @@ class RecipeParser_Parser_Foodcom {
         // Find as 'yield'
         if ($nodes->length) {
             $line = $nodes->item(0)->nodeValue;
-            $line = RecipeParser_Text::formatYield($line);
+            $line = \RecipeParser\Text::formatYield($line);
             $recipe->yield = $line;
 
         // Or as number of 'servings'
@@ -34,7 +36,7 @@ class RecipeParser_Parser_Foodcom {
             $nodes = $xpath->query('//*[@class="servings"]//*[@class="value"]');
             if ($nodes->length) {
                 $line = $nodes->item(0)->nodeValue;
-                $line = RecipeParser_Text::formatYield($line);
+                $line = \RecipeParser\Text::formatYield($line);
                 $recipe->yield = $line;
             }
         }

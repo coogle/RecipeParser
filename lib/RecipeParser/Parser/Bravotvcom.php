@@ -1,10 +1,12 @@
 <?php
 
-class RecipeParser_Parser_Bravotvcom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
-        $recipe = new RecipeParser_Recipe();
-        $xpath = new DOMXPath($doc);
+class Bravotvcom {
+
+    static public function parse(\DOMDocument $doc, $url) {
+        $recipe = new \RecipeParser\Recipe();
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR BRAVOTV.COM
 
@@ -33,11 +35,11 @@ class RecipeParser_Parser_Bravotvcom {
             // Inspect keys/values we've found.
             if ($key == 'Total Time:') {
                 $value = self::cleanupTime($value);
-                $recipe->time['total'] = RecipeParser_Times::toMinutes($value);
+                $recipe->time['total'] = \RecipeParser\Times::toMinutes($value);
             }
             if ($key == 'Prep Time:') {
                 $value = self::cleanupTime($value);
-                $recipe->time['prep'] = RecipeParser_Times::toMinutes($value);
+                $recipe->time['prep'] = \RecipeParser\Times::toMinutes($value);
             }
         }
 
@@ -45,17 +47,17 @@ class RecipeParser_Parser_Bravotvcom {
         $node_list = $xpath->query('//dd[@class = "preptime"]');
         if ($node_list->length) {
             $value = $node_list->item(0)->nodeValue;
-            $recipe->time['prep'] = RecipeParser_Times::toMinutes($value);
+            $recipe->time['prep'] = \RecipeParser\Times::toMinutes($value);
         }
         $node_list = $xpath->query('//dd[@class = "cooktime"]');
         if ($node_list->length) {
             $value = $node_list->item(0)->nodeValue;
-            $recipe->time['cook'] = RecipeParser_Times::toMinutes($value);
+            $recipe->time['cook'] = \RecipeParser\Times::toMinutes($value);
         }
         $node_list = $xpath->query('//dd[@class = "duration totaltime special"]');
         if ($node_list->length) {
             $value = $node_list->item(0)->nodeValue;
-            $recipe->time['total'] = RecipeParser_Times::toMinutes($value);
+            $recipe->time['total'] = \RecipeParser\Times::toMinutes($value);
         }
 
         // Ingredients, Yield, Description, Notes, etc.
@@ -108,7 +110,7 @@ class RecipeParser_Parser_Bravotvcom {
                     $sub_nodes = $node->childNodes;
                     foreach ($sub_nodes as $sub_node) {
                         if ($sub_node->nodeName == 'h5') {
-                            $value = RecipeParser_Text::formatSectionName($sub_node->nodeValue);
+                            $value = \RecipeParser\Text::formatSectionName($sub_node->nodeValue);
                             $recipe->addIngredientsSection($value);
                         } else if ($sub_node->nodeName == 'ul') {
                             $li_nodes = $sub_node->childNodes;
@@ -126,11 +128,11 @@ class RecipeParser_Parser_Bravotvcom {
                         $value = trim($sub_node->nodeValue);
                         // Section titles appear in all-caps.
                         if ($value && ($value == strtoupper($value) || preg_match('/:$/', $value))) {
-                            $value = RecipeParser_Text::formatSectionName($value);
+                            $value = \RecipeParser\Text::formatSectionName($value);
                             $recipe->addInstructionsSection($value);
 
                         } else {
-                            $value = RecipeParser_Text::stripLeadingNumbers($value);
+                            $value = \RecipeParser\Text::stripLeadingNumbers($value);
                             $recipe->appendInstruction($value);
                         }
                     }
@@ -173,7 +175,7 @@ class RecipeParser_Parser_Bravotvcom {
         if ($nodes->length) {
             $photo_url = $nodes->item(0)->getAttribute('src');
             $photo_url = str_replace('/medium/', '/original/', $photo_url);
-            $recipe->photo_url = RecipeParser_Text::relativeToAbsolute($photo_url, $url);
+            $recipe->photo_url = \RecipeParser\Text::relativeToAbsolute($photo_url, $url);
         }
 
         return $recipe;

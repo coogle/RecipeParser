@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Elanaspantrycom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Elanaspantrycom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microformat stuff we can find.
-        $recipe = RecipeParser_Parser_Microformat::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\Microformat::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR ELANASPANTRY.COM
 
@@ -13,7 +15,7 @@ class RecipeParser_Parser_Elanaspantrycom {
             $nodes = $xpath->query('//div[@class="box"]/strong');
             if ($nodes->length) {
                 $line = $nodes->item(0)->nodeValue;
-                $line = RecipeParser_Text::formatTitle($line);
+                $line = \RecipeParser\Text::formatTitle($line);
                 $recipe->title = $line;
             }
         }
@@ -23,7 +25,7 @@ class RecipeParser_Parser_Elanaspantrycom {
             foreach ($nodes as $node) {
                 $line = trim($node->nodeValue);
                 if (stripos($line, "makes") === 0) {
-                    $line = RecipeParser_Text::formatYield($line);
+                    $line = \RecipeParser\Text::formatYield($line);
                     $recipe->yield = $line;
                     break;
                 }
@@ -48,7 +50,7 @@ class RecipeParser_Parser_Elanaspantrycom {
                 }
                 $lines = explode("<br>", $str);
                 foreach ($lines as $line) {
-                    $line = RecipeParser_Text::formatAsOneLine($line);
+                    $line = \RecipeParser\Text::formatAsOneLine($line);
                     $recipe->appendIngredient($line);
                 }
             }
@@ -58,7 +60,7 @@ class RecipeParser_Parser_Elanaspantrycom {
             $nodes = $xpath->query('//div[@class="box"]/ol/li');
             foreach ($nodes as $node) {
                 $line = $node->nodeValue;
-                $line = RecipeParser_Text::formatAsOneLine($line);
+                $line = \RecipeParser\Text::formatAsOneLine($line);
                 $recipe->appendInstruction($line);
             }
         }

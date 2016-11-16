@@ -1,6 +1,8 @@
 <?php
 
-class RecipeParser_Canonical {
+namespace RecipeParser;
+
+class Canonical {
 
     /**
      * Inspect HTML for signs that it redirects or links to another (canonical) recipe file.
@@ -39,7 +41,7 @@ class RecipeParser_Canonical {
             $nodes = $xpath->query('//*[@class="title-wrap"]//a[@class="btn vip"]');
             if ($nodes->length) {
                 $href = $nodes->item(0)->getAttribute("href");
-                $url = RecipeParser_Text::relativeToAbsolute($href, $url);
+                $url = \RecipeParser\Text::relativeToAbsolute($href, $url);
                 return $url;
             }
         }
@@ -87,7 +89,7 @@ class RecipeParser_Canonical {
                 $line = trim($node->nodeValue);
                 if (strpos($line, "Get the Recipe:") !== false) {
                     $href = $node->getAttribute("href");
-                    $url = RecipeParser_Text::relativeToAbsolute($href, $url);
+                    $url = \RecipeParser\Text::relativeToAbsolute($href, $url);
                     return $url;
                 }
             }
@@ -96,7 +98,7 @@ class RecipeParser_Canonical {
             $nodes = $xpath->query('//*[@class="calendar-day-text-recipe-headline-link"]/a');
             if ($nodes->length) {
                 $href = $nodes->item(0)->getAttribute("href");
-                $url = RecipeParser_Text::relativeToAbsolute($href, $url);
+                $url = \RecipeParser\Text::relativeToAbsolute($href, $url);
                 return $url;
             }
         }
@@ -107,10 +109,10 @@ class RecipeParser_Canonical {
     public static function getXPath($html) {
         // Turn off libxml errors to prevent mismatched tag warnings.
         libxml_use_internal_errors(true);
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $html = mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8");
         $doc->loadHTML('<?xml encoding="UTF-8">' . $html);
-        return new DOMXPath($doc);
+        return new \DOMXPath($doc);
     }
 
     public static function getUrlFromOgUrl($html, $url) {
@@ -140,7 +142,7 @@ class RecipeParser_Canonical {
         $nodes = $xpath->query('//*[@id="source-full-directions"]');
         if ($nodes->length) {
             if ($href = $nodes->item(0)->getAttribute("href")) {
-                $url = RecipeParser_Text::relativeToAbsolute($href, $url);
+                $url = \RecipeParser\Text::relativeToAbsolute($href, $url);
                 return $url;
             }
         }

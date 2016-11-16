@@ -1,6 +1,8 @@
 <?php
 
-class RecipeParser_Times {
+namespace RecipeParser;
+
+class Times {
 
     /**
      * Convert a time (string) to minutes. The string can be formatted in any

@@ -1,6 +1,8 @@
 <?php
 
-class RecipeParser_Recipe {
+namespace RecipeParser;
+
+class Recipe {
 
     public $title = '';
     public $description = '';

@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Chowcom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Chowcom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataSchema::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataSchema::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR CHOW.COM
 
@@ -26,7 +28,7 @@ class RecipeParser_Parser_Chowcom {
             $nodes = $xpath->query('//*[@id="ingredients_list"]//li');
             foreach ($nodes as $node) {
                 $line = $node->nodeValue;
-                $line = RecipeParser_Text::formatAsOneLine($line);
+                $line = \RecipeParser\Text::formatAsOneLine($line);
                 $recipe->appendIngredient($line);
             }
         }
@@ -36,7 +38,7 @@ class RecipeParser_Parser_Chowcom {
             $nodes = $xpath->query('//*[@itemprop="recipeInstructions"]');
             foreach ($nodes as $node) {
                 $line = $node->nodeValue;
-                $line = RecipeParser_Text::formatAsOneLine($line);
+                $line = \RecipeParser\Text::formatAsOneLine($line);
                 $recipe->appendInstruction($line);
             }
         }

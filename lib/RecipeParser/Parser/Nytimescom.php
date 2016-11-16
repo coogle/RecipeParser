@@ -1,10 +1,12 @@
 <?php
 
-class RecipeParser_Parser_Nytimescom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
-        $recipe = new RecipeParser_Recipe();
-        $xpath = new DOMXPath($doc);
+class Nytimescom {
+
+    static public function parse(\DOMDocument $doc, $url) {
+        $recipe = new \RecipeParser\Recipe();
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR NYTIMES.COM
 
@@ -17,7 +19,7 @@ class RecipeParser_Parser_Nytimescom {
             $nodes = $xpath->query('//h1[@class="recipe-title recipeName"]');
             if ($nodes->length) {
                 $value = $nodes->item(0)->nodeValue;
-                $value = RecipeParser_Text::formatTitle($value);
+                $value = \RecipeParser\Text::formatTitle($value);
                 $recipe->title = $value;
             }
 
@@ -25,7 +27,7 @@ class RecipeParser_Parser_Nytimescom {
             $nodes = $xpath->query('//*[@itemprop="recipeYield"]');
             if ($nodes->length) {
                 $value = $nodes->item(0)->nodeValue;
-                $value = RecipeParser_Text::formatYield($value);
+                $value = \RecipeParser\Text::formatYield($value);
                 $recipe->yield = $value;
             }
 
@@ -35,7 +37,7 @@ class RecipeParser_Parser_Nytimescom {
                 if ($node->nodeName == "h3") {
                     $value = trim($node->nodeValue);
                     if (!preg_match('/^Ingredients:?$/i', $value)) {
-                        $value = RecipeParser_Text::formatSectionName($value);
+                        $value = \RecipeParser\Text::formatSectionName($value);
                         $recipe->addIngredientsSection($value);
                     }
                 } else {
@@ -50,7 +52,7 @@ class RecipeParser_Parser_Nytimescom {
             $nodes = $xpath->query('//*[@itemprop="recipeInstructions"]/dd');
             foreach ($nodes as $node) {
                 $value = $node->nodeValue;
-                $value = RecipeParser_Text::formatAsOneLine($value);
+                $value = \RecipeParser\Text::formatAsOneLine($value);
                 $recipe->appendInstruction($value);
             }
 
@@ -81,13 +83,13 @@ class RecipeParser_Parser_Nytimescom {
             foreach ($nodes as $node) {
                 $text = trim($node->nodeValue);
                 if (preg_match('/^Yield:? (.+)/', $text, $m)) {
-                    $recipe->yield = RecipeParser_Text::formatYield($m[1]);
+                    $recipe->yield = \RecipeParser\Text::formatYield($m[1]);
                 
                 } else if (preg_match('/^Time:? (.+)/', $text, $m)) {
                     $str = trim($m[1]);
                     $str = preg_replace('/About (.+)/', '$1', $str);
                     $str = preg_replace('/(.+) plus.*/', '$1', $str);
-                    $recipe->time['total'] = RecipeParser_Times::toMinutes($str);
+                    $recipe->time['total'] = \RecipeParser\Times::toMinutes($str);
                 }
             }
 
@@ -98,7 +100,7 @@ class RecipeParser_Parser_Nytimescom {
 
                 // Section names
                 if ($line && $line == strtoupper($line)) {
-                    $line = RecipeParser_Text::formatSectionName($line);
+                    $line = \RecipeParser\Text::formatSectionName($line);
                     $recipe->addIngredientsSection($line);
                     continue;
                 }
@@ -123,7 +125,7 @@ class RecipeParser_Parser_Nytimescom {
 
                 // Instructions start with line numbers
                 if (!$in_notes_section && preg_match('/^\d+\./', $line)) {
-                    $line = RecipeParser_Text::stripLeadingNumbers($line);
+                    $line = \RecipeParser\Text::stripLeadingNumbers($line);
                     $recipe->appendInstruction($line);
                     continue;
                 }
@@ -151,7 +153,7 @@ class RecipeParser_Parser_Nytimescom {
             if ($nodes->length) {
                 $photo_url = $nodes->item(0)->getAttribute('src');
                 $photo_url = str_replace('-articleInline.jpg', '-popup.jpg', $photo_url);
-                $recipe->photo_url = RecipeParser_Text::relativeToAbsolute($photo_url, $url);
+                $recipe->photo_url = \RecipeParser\Text::relativeToAbsolute($photo_url, $url);
             }
         
         }

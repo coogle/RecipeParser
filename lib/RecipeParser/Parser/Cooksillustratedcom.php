@@ -1,10 +1,12 @@
 <?php
 
-class RecipeParser_Parser_Cooksillustratedcom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
-        $recipe = new RecipeParser_Recipe();
-        $xpath = new DOMXPath($doc);
+class Cooksillustratedcom {
+
+    static public function parse(\DOMDocument $doc, $url) {
+        $recipe = new \RecipeParser\Recipe();
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR COOKSILLUSTRATED.COM
 
@@ -36,7 +38,7 @@ class RecipeParser_Parser_Cooksillustratedcom {
             // ingredients themselves have no class.
             if ($node->hasAttributes()) {
                 $line = trim($node->nodeValue);
-                $line = RecipeParser_Text::formatSectionName($line);
+                $line = \RecipeParser\Text::formatSectionName($line);
                 $recipe->addIngredientsSection($line);
             } else {
                 $line = trim($node->nodeValue);
@@ -59,7 +61,7 @@ class RecipeParser_Parser_Cooksillustratedcom {
         $nodes = $xpath->query('//ol[@class="recipe_instructions"]/li');
         foreach ($nodes as $node) {
             $line = trim($node->nodeValue);
-            $line = RecipeParser_Text::stripLeadingNumbers($line);
+            $line = \RecipeParser\Text::stripLeadingNumbers($line);
             $recipe->appendInstruction($line);
         }
 
@@ -67,13 +69,13 @@ class RecipeParser_Parser_Cooksillustratedcom {
         $nodes = $xpath->query('//img[@class="recipeImg"]');
         if ($nodes->length) {
             $photo_url = $nodes->item(0)->getAttribute('src');
-            $recipe->photo_url = RecipeParser_Text::relativeToAbsolute($photo_url, $url);
+            $recipe->photo_url = \RecipeParser\Text::relativeToAbsolute($photo_url, $url);
         } else {
             // Second option for where to find recipe image
             $nodes = $xpath->query('//img[@id="splashImage"]');
             if ($nodes->length) {
                 $photo_url = $nodes->item(0)->getAttribute('src');
-                $recipe->photo_url = RecipeParser_Text::relativeToAbsolute($photo_url, $url);
+                $recipe->photo_url = \RecipeParser\Text::relativeToAbsolute($photo_url, $url);
             }
         }
 

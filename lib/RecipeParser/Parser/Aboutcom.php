@@ -1,11 +1,13 @@
 <?php
 
-class RecipeParser_Parser_Aboutcom {
+namespace RecipeParser\Parser;
 
-    static public function parse(DOMDocument $doc, $url) {
+class Aboutcom {
+
+    static public function parse(\DOMDocument $doc, $url) {
         // Get all of the standard microdata stuff we can find.
-        $recipe = RecipeParser_Parser_MicrodataSchema::parse($doc, $url);
-        $xpath = new DOMXPath($doc);
+        $recipe = \RecipeParser\Parser\MicrodataSchema::parse($doc, $url);
+        $xpath = new \DOMXPath($doc);
 
         // OVERRIDES FOR ABOUT.COM
 
@@ -13,14 +15,14 @@ class RecipeParser_Parser_Aboutcom {
         $nodes = $xpath->query('//*[@itemprop="headline name"]');
         if ($nodes->length) {
             $value = trim($nodes->item(0)->nodeValue);
-            $recipe->title = RecipeParser_Text::formatTitle($value);
+            $recipe->title = \RecipeParser\Text::formatTitle($value);
         }
 
         // Credits
         $nodes = $xpath->query('//*[@itemprop="author"]//*[@itemprop="name"]');
         if ($nodes->length) {
             $line = $nodes->item(0)->nodeValue;
-            $recipe->credits = RecipeParser_Text::formatCredits($line . ", About.com");
+            $recipe->credits = \RecipeParser\Text::formatCredits($line . ", About.com");
         }
 
         // Ingredients 
@@ -28,12 +30,12 @@ class RecipeParser_Parser_Aboutcom {
         $nodes = $xpath->query('//*[@itemprop="ingredients"]');
         foreach ($nodes as $node) {
             $value = $node->nodeValue;
-            $value = RecipeParser_Text::formatAsOneLine($value);
-            if (RecipeParser_Text::matchSectionName($value) 
+            $value = \RecipeParser\Text::formatAsOneLine($value);
+            if (\RecipeParser\Text::matchSectionName($value) 
                 || $node->childNodes->item(0)->nodeName == "strong"
                 || $node->childNodes->item(0)->nodeName == "b"
             ) {
-                $value = RecipeParser_Text::formatSectionName($value);
+                $value = \RecipeParser\Text::formatSectionName($value);
                 $recipe->addIngredientsSection($value);
             } else {
                 $recipe->appendIngredient($value);
@@ -86,7 +88,7 @@ class RecipeParser_Parser_Aboutcom {
                 // Match section names that read something like "---For the cake: Raise the oven temperature..."
                 if (preg_match("/^(?:-{2,})?For the (.+)\: (.*)$/i", $line, $m)) {
                     $section = $m[1];
-                    $section = RecipeParser_Text::formatSectionName($section);
+                    $section = \RecipeParser\Text::formatSectionName($section);
                     $recipe->addInstructionsSection($section);
 
                     // Reset the value of $line, without the section name.
