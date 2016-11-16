@@ -1,8 +1,7 @@
-RecipeParser
+RecipeParser (with Namespaces)
 =================================
 
-A PHP library for parsing recipe data from HTML.
-
+A PHP library for parsing recipe data from HTML. This is a fork of another project, except it uses PHP namespaces (along with other misc. upgrades).
 
 Usage
 ------------------------------
