@@ -92,7 +92,7 @@ class RecipeParser {
      * @param string $url
      * @return object RecipeParser_Recipe
      */
-    static public function parse(DOMDocument $doc, $url=null) {
+    static public function parse(\DOMDocument $doc, $url=null) {
         $html = $doc->saveHTML();
         $parser = null;
 
