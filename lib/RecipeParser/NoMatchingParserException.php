@@ -2,5 +2,5 @@
 
 namespace RecipeParser;
 
-class NoMatchingParserException extends Exception {}
+class NoMatchingParserException extends \Exception {}
 
